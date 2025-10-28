@@ -5,7 +5,7 @@ import { Input } from "./components/ui/input";
 import { Separator } from "./components/ui/separator";
 import { useState } from "react";
 import axios from "axios";
-import { toast } from "sonner";
+import { toast, Toaster } from "sonner";
 import { Spinner } from "./components/ui/spinner";
 
 function App() {
@@ -119,6 +119,7 @@ function App() {
                         <Separator />
                     </div>
                 </div>
+                <Toaster />
             </div>
         </>
     );
