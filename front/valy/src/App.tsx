@@ -18,7 +18,7 @@ function App() {
             axios
                 .post("http://localhost:8000/scrape/economie")
                 .then((response) => { toast.success(response.data.message)} )
-                .catch((error) => {toast.warning(error)})
+                .catch((error) => {toast.warning(error.message)})
                 .finally(() => {
                     setPending(false);
                 });
@@ -26,7 +26,7 @@ function App() {
             axios
                 .post("http://localhost:8000/scrape/ecb")
                 .then((response) => {toast.success(response.data.message)})
-                .catch((error) => {toast.warning(error)})
+                .catch((error) => {toast.warning(error.message)})
                 .finally(() => {
                     setPending(false);
                 });
@@ -45,7 +45,7 @@ function App() {
                         <Button variant="outline">
                             <Search /> Rechercher
                         </Button>
-                        <Button variant="outline" onClick={()=>refresh()}>
+                        <Button variant="outline" disabled={pending} onClick={()=>refresh()}>
                           {pending && <Spinner />}
                           Recharger</Button>
                     </ButtonGroup>
@@ -119,7 +119,7 @@ function App() {
                         <Separator />
                     </div>
                 </div>
-                <Toaster />
+                <Toaster position="top-center" />
             </div>
         </>
     );
