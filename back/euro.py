@@ -16,6 +16,12 @@ from datetime import datetime
 import base64
 from webdriver_manager.chrome import ChromeDriverManager
 import re
+import sys
+import io
+
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 @dataclass
 class DocumentData:
@@ -57,7 +63,7 @@ def clean_filename(title: str, max_length: int = 100) -> str:
     return filename
 
 # === Configuration du répertoire de téléchargement ===
-base_path = r"C:\Users\Afa-tech\Desktop\disque_dur\EMIT\code\valt\front\valy\public"
+base_path = r"C:\Users\Administrator\Downloads\valyfrontBack-main\valyfrontBack-main\front\valy\public"
 download_folder = os.path.join(base_path, "ecb_documents")
 os.makedirs(download_folder, exist_ok=True)
 

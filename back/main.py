@@ -5,6 +5,7 @@ from typing import Optional
 from datetime import datetime
 import subprocess
 import sys
+import os
 
 app = FastAPI(title="Scraper API")
 
@@ -28,7 +29,8 @@ async def root():
         "message": "Scraper API",
         "endpoints": {
             "POST /scrape/economie": "Lance le scraping du calendrier économique",
-            "POST /scrape/ecb": "Lance le scraping des documents ECB"
+            "POST /scrape/ecb": "Lance le scraping des documents ECB",
+            "POST /scrape/usa": "Lance le scraping des documents Federal Reserve"
         }
     }
 
@@ -40,12 +42,18 @@ async def scrape_economie():
     try:
         print("🚀 Démarrage du scraping économie...")
         
+        env = os.environ.copy()
+        env['PYTHONIOENCODING'] = 'utf-8'
+        
         # Exécuter le script scraper_economie.py
         result = subprocess.run(
             [sys.executable, "economic.py"],
             capture_output=True,
             text=True,
-            timeout=300  # 5 minutes timeout
+            timeout=300,  # 5 minutes timeout
+            env=env,
+            encoding='utf-8',
+            errors='replace'
         )
         
         # Vérifier si le script s'est terminé correctement
@@ -84,12 +92,18 @@ async def scrape_ecb():
     try:
         print("🚀 Démarrage du scraping ECB...")
         
+        env = os.environ.copy()
+        env['PYTHONIOENCODING'] = 'utf-8'
+        
         # Exécuter le script scraper_ecb.py
         result = subprocess.run(
             [sys.executable, "euro.py"],
             capture_output=True,
             text=True,
-            timeout=600  # 10 minutes timeout (plus long car téléchargement de PDFs)
+            timeout=600,  # 10 minutes timeout (plus long car téléchargement de PDFs)
+            env=env,
+            encoding='utf-8',
+            errors='replace'
         )
         
         # Vérifier si le script s'est terminé correctement
@@ -109,6 +123,56 @@ async def scrape_ecb():
     
     except subprocess.TimeoutExpired:
         print("⏱️ Timeout scraping ECB")
+        raise HTTPException(
+            status_code=408,
+            detail="Le scraping a pris trop de temps (timeout)"
+        )
+    except Exception as e:
+        print(f"❌ Erreur: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Erreur lors du scraping: {str(e)}"
+        )
+
+@app.post("/scrape/usa", response_model=ScrapeResponse)
+async def scrape_usa():
+    """
+    Lance le scraping des documents de la Federal Reserve (USA)
+    """
+    try:
+        print("🚀 Démarrage du scraping USA (Federal Reserve)...")
+        
+        env = os.environ.copy()
+        env['PYTHONIOENCODING'] = 'utf-8'
+        
+        # Exécuter le script usa.py
+        result = subprocess.run(
+            [sys.executable, "usa.py"],
+            capture_output=True,
+            text=True,
+            timeout=600,  # 10 minutes timeout
+            env=env,
+            encoding='utf-8',
+            errors='replace'
+        )
+        
+        # Vérifier si le script s'est terminé correctement
+        if result.returncode == 0:
+            print("✅ Scraping USA terminé")
+            return ScrapeResponse(
+                success=True,
+                message="Scraping des documents Federal Reserve terminé avec succès",
+                timestamp=datetime.now().isoformat()
+            )
+        else:
+            print(f"❌ Erreur scraping USA: {result.stderr}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Erreur lors du scraping: {result.stderr}"
+            )
+    
+    except subprocess.TimeoutExpired:
+        print("⏱️ Timeout scraping USA")
         raise HTTPException(
             status_code=408,
             detail="Le scraping a pris trop de temps (timeout)"
