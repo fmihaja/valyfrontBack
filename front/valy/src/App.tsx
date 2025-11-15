@@ -83,7 +83,7 @@ function App() {
                                     </div>
                                     {/* Lien de téléchargement */}
                                     <a
-                                        href="/assets/economie/economic_calendar_sections.xlsx"
+                                        href="/economie/economic_calendar_sections.xlsx"
                                         download="economic_calendar_sections.xlsx"
                                         className="inline-flex items-center justify-center w-15 h-15 rounded-full hover:bg-accent hover:text-accent-foreground transition-colors"
                                     >
