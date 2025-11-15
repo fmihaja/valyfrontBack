@@ -12,6 +12,7 @@ import random
 from dataclasses import dataclass
 from typing import List
 from datetime import datetime
+from webdriver_manager.chrome import ChromeDriverManager
 
 @dataclass
 class dataTH:
@@ -56,7 +57,7 @@ def close_breaking_news(driver, wait, timeout=3):
 
 def export_sections_by_date(data: List[dateTD]):
     """Exporte les données avec sections groupées par date dans un seul onglet"""
-    base_path = r"C:\Users\Afa-tech\Desktop\disque_dur\EMIT\code\valt\front\valy\src\assets"
+    base_path = r"C:\Users\Afa-tech\Desktop\disque_dur\EMIT\code\valt\front\valy\public"
     download_folder = os.path.join(base_path, "economie")
     os.makedirs(download_folder, exist_ok=True)
     
@@ -123,6 +124,7 @@ def scrape_economic_calendar():
     # Configuration de Chrome
     chrome_options = webdriver.ChromeOptions()
     chrome_options = webdriver.ChromeOptions()
+    # chrome_options.add_argument("--log-level=3")
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('--disable-gpu')
     chrome_options.add_argument('--disable-software-rasterizer')
@@ -131,10 +133,15 @@ def scrape_economic_calendar():
     chrome_options.add_argument('--ignore-certificate-errors')
     chrome_options.add_argument('--window-size=1920,1080')
     chrome_options.add_argument('--disable-blink-features=AutomationControlled')
+    chrome_options.add_argument("--log-level=3")
+    chrome_options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    chrome_options.add_experimental_option('prefs', {'profile.default_content_setting_values.notifications': 2})
     chrome_options.add_argument('user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
     # chrome_options.add_argument('--headless')  # Décommentez pour mode headless
     
-    service = Service(executable_path="chromedriver.exe")
+    # service = Service(executable_path="chromedriver.exe")
+    service = Service(ChromeDriverManager().install())
+
     
     max_retries = 3
     retry_delay = 5
